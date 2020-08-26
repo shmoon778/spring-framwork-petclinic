@@ -15,6 +15,8 @@
  */
 package org.springframework.samples.petclinic;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -51,8 +53,19 @@ public class PetclinicInitializer extends AbstractDispatcherServletInitializer {
      */
     private static final String SPRING_PROFILE = "jpa";
 
+    Logger logger = LoggerFactory.getLogger(getClass());
+
     @Override
     protected WebApplicationContext createRootApplicationContext() {
+        try {
+            String time = System.getenv("SLEEP_TIME");
+            if (time == null) time = "20000";
+            logger.debug("Start sleep: " + time + " milsec");
+            Thread.sleep(Long.valueOf(time));
+            logger.debug("End sleep");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         XmlWebApplicationContext rootAppContext = new XmlWebApplicationContext();
         rootAppContext.setConfigLocations("classpath:spring/business-config.xml", "classpath:spring/tools-config.xml");
         rootAppContext.getEnvironment().setDefaultProfiles(SPRING_PROFILE);
